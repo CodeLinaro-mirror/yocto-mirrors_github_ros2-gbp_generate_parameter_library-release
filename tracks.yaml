@@ -135,7 +135,7 @@ tracks:
     release_tag: :{version}
     ros_distro: lyrical
     vcs_type: git
-    vcs_uri: https://github.com/PickNikRobotics/generate_parameter_library.git
+    vcs_uri: https://github.com/ros-tooling/generate_parameter_library.git
     version: :{auto}
   rolling:
     actions:
