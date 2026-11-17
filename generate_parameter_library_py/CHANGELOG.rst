@@ -2,44 +2,65 @@
 Changelog for package generate_parameter_library_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.7.7 (2026-10-05)
+1.4.0 (2026-11-17)
 ------------------
-* fix that if no parameter is updated, the user callback is not called (backport `#383 <https://github.com/PickNikRobotics/generate_parameter_library/issues/383>`_) (`#386 <https://github.com/PickNikRobotics/generate_parameter_library/issues/386>`_)
-* Contributors: mergify[bot]
+* Escape text in generated C++ and Python code (`#405 <https://github.com/ros-tooling/generate_parameter_library/issues/405>`_)
+* Install parameter definitions to share/<package>/parameter_definitions (`#419 <https://github.com/ros-tooling/generate_parameter_library/issues/419>`_)
+* Report wrong default_value types as definition errors (`#408 <https://github.com/ros-tooling/generate_parameter_library/issues/408>`_)
+* Validator: name nested sequences in array type errors (`#418 <https://github.com/ros-tooling/generate_parameter_library/issues/418>`_)
+* Validator: add --node to check only the node that loads the configs (`#416 <https://github.com/ros-tooling/generate_parameter_library/issues/416>`_)
+* Validator: merge several --config files like the parameter files of one node (`#413 <https://github.com/ros-tooling/generate_parameter_library/issues/413>`_)
+* Recognize a parameter by its type field, not by its first key (`#407 <https://github.com/ros-tooling/generate_parameter_library/issues/407>`_)
+* Remove dead code (`#412 <https://github.com/ros-tooling/generate_parameter_library/issues/412>`_)
+* Accept an output file name without a directory in the generators (`#409 <https://github.com/ros-tooling/generate_parameter_library/issues/409>`_)
+* Load parameter definitions with the safe YAML loader (`#406 <https://github.com/ros-tooling/generate_parameter_library/issues/406>`_)
+* Name the offending element and bound in element bound messages (`#410 <https://github.com/ros-tooling/generate_parameter_library/issues/410>`_)
+* Python install paths: clean up generated modules and extend CI coverage (`#400 <https://github.com/ros-tooling/generate_parameter_library/issues/400>`_)
+* Add a standalone configuration validator (`#312 <https://github.com/ros-tooling/generate_parameter_library/issues/312>`_) (`#388 <https://github.com/ros-tooling/generate_parameter_library/issues/388>`_)
+* Fix python install paths (`#393 <https://github.com/ros-tooling/generate_parameter_library/issues/393>`_)
+* Validate bound validators against parameter types (`#373 <https://github.com/ros-tooling/generate_parameter_library/issues/373>`_)
+* Validate fixed-size parameter defaults (`#374 <https://github.com/ros-tooling/generate_parameter_library/issues/374>`_)
+* Contributors: Christoph Fröhlich, Daniiiil1, Davide Faconti, Marq Rasmussen
 
-0.7.6 (2026-08-08)
+1.3.1 (2026-10-05)
+------------------
+* fix that if no parameter is updated, the user callback is not called (`#383 <https://github.com/PickNikRobotics/generate_parameter_library/issues/383>`_)
+* Contributors: Fabian Hirmann
+
+1.3.0 (2026-07-24)
+------------------
+* Accept quotes in description and additional constraints (`#357 <https://github.com/PickNikRobotics/generate_parameter_library/issues/357>`_)
+* Contributors: Hugal31
+
+1.2.0 (2026-06-09)
+------------------
+* Made fields in python structs assigned per-instance instead of at the class scope (`#351 <https://github.com/PickNikRobotics/generate_parameter_library/issues/351>`_)
+* Fix ParameterDescription of exclusive bounds (`#339 <https://github.com/PickNikRobotics/generate_parameter_library/issues/339>`_)
+* Contributors: Alex Navarro, Christoph Fröhlich
+
+1.1.0 (2026-05-14)
 ------------------
 
-0.7.5 (2026-07-24)
-------------------
-* Accept quotes in description and additional constraints (`#357 <https://github.com/PickNikRobotics/generate_parameter_library/issues/357>`_) (`#372 <https://github.com/PickNikRobotics/generate_parameter_library/issues/372>`_)
-* Contributors: mergify[bot]
-
-0.7.4 (2026-06-10)
-------------------
-* Fix ParameterDescription of exclusive bounds (backport `#339 <https://github.com/PickNikRobotics/generate_parameter_library/issues/339>`_)
-* Contributors: Christoph Froehlich
-
-0.7.3 (2026-05-06)
+1.0.1 (2026-05-06)
 ------------------
 
-0.7.2 (2026-04-22)
+1.0.0 (2026-04-22)
 ------------------
-* Fix markdown generation for bounds/element-bounds (backport `#337 <https://github.com/PickNikRobotics/generate_parameter_library/issues/337>`_)
-* Generate markdown documentation also for none type (backport `#345 <https://github.com/PickNikRobotics/generate_parameter_library/issues/345>`_)
-* Warn on conflicting validators (`#344 <https://github.com/PickNikRobotics/generate_parameter_library/issues/344>`_)
+* Fix markdown generation for bounds/element-bounds (`#337 <https://github.com/PickNikRobotics/generate_parameter_library/issues/337>`_)
+* Generate markdown documentation also for none type (`#345 <https://github.com/PickNikRobotics/generate_parameter_library/issues/345>`_)
 * Implement string_array_fixed_XX (`#341 <https://github.com/PickNikRobotics/generate_parameter_library/issues/341>`_)
-* Fix rst syntax parsing in parameter description (backport `#338 <https://github.com/PickNikRobotics/generate_parameter_library/issues/338>`_)
-* Contributors: Christoph Froehlich, Christoph Fröhlich, Mat198
+* Fix conflicting validators (`#336 <https://github.com/PickNikRobotics/generate_parameter_library/issues/336>`_)
+* Fix rst syntax parsing in parameter description (`#338 <https://github.com/PickNikRobotics/generate_parameter_library/issues/338>`_)
+* Remove deprecated parameter_traits (`#294 <https://github.com/PickNikRobotics/generate_parameter_library/issues/294>`_) (`#330 <https://github.com/PickNikRobotics/generate_parameter_library/issues/330>`_)
+* Contributors: Christoph Fröhlich, Mat198
 
-0.7.1 (2026-03-22)
+0.8.0 (2026-03-22)
 ------------------
-* Fix nested mappings double dot bug and add tests (backport `#327 <https://github.com/PickNikRobotics/generate_parameter_library/issues/327>`_ `#329 <https://github.com/PickNikRobotics/generate_parameter_library/issues/329>`_) (`#331 <https://github.com/PickNikRobotics/generate_parameter_library/issues/331>`_)
-  Co-authored-by: Mat198 <44040676+Mat198@users.noreply.github.com>
+* Fix nested mappings double dot bug (`#329 <https://github.com/PickNikRobotics/generate_parameter_library/issues/329>`_)
   Co-authored-by: Nathan <50861188+natrad100@users.noreply.github.com>
-* Fix nested mapped parameters map (backport `#306 <https://github.com/PickNikRobotics/generate_parameter_library/issues/306>`_)
-* Remove unused variables in pytest (backport `#317 <https://github.com/PickNikRobotics/generate_parameter_library/issues/317>`_)
-* Contributors: Christoph Froehlich, Christoph Fröhlich
+* Fix nested mapped parameters map (`#306 <https://github.com/PickNikRobotics/generate_parameter_library/issues/306>`_)
+* Remove unused variables in pytest (`#317 <https://github.com/PickNikRobotics/generate_parameter_library/issues/317>`_)
+* Contributors: Christoph Fröhlich, Nick Laurenson
 
 0.7.0 (2026-02-22)
 ------------------

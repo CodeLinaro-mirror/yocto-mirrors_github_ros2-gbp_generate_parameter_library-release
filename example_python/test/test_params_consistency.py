@@ -22,75 +22,51 @@ and node.get_parameter() (ROS2 parameter server) for admittance_controller.
 After ParamListener.__init__() calls declare_params(), all parameters (static
 and dynamic map entries) are declared in the ROS2 node and read back via
 get_parameter(), then stored in params_ via update_internal_params(). This
-test verifies both sources remain in sync under default values and after
-updates via set_parameters().
+test verifies both sources remain in sync under the example configuration
+values and after updates via set_parameters().
 """
 
 import importlib
 import math
+import os
 import unittest
 
 import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 
-import generate_parameter_module_example.admittance_parameters
+from generate_parameter_module_example.admittance_parameters import (
+    admittance_controller,
+)
 
 
 class TestParamsConsistency(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        rclpy.init()
+        # Load the example configuration file instead of hardcoding parameter
+        # values: it provides every required parameter (those declared with
+        # type-only and no default_value). Without these, declare_params()
+        # raises ParameterUninitializedException when calling get_parameter()
+        # on them after declare_parameter(type_only).
+        config = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '..',
+            'config',
+            'implementation.yaml',
+        )
+        rclpy.init(args=['--ros-args', '--params-file', config])
 
     @classmethod
     def tearDownClass(cls):
         rclpy.shutdown()
 
     def setUp(self):
-        # Reload the module to reset class-level attribute state between tests.
-        # See: https://github.com/PickNikRobotics/generate_parameter_library/issues/313
-        importlib.reload(generate_parameter_module_example.admittance_parameters)
-        from generate_parameter_module_example.admittance_parameters import (
-            admittance_controller as ac,
-        )
-
-        self.ac = ac
-
-        # Provide values for required parameters (declared with type-only, no default).
-        # Without these, declare_params() raises ParameterUninitializedException when
-        # calling get_parameter() on them after declare_parameter(type_only).
-        required_params = [
-            Parameter('fixed_string_no_default', value='happy'),
-            Parameter(
-                'fixed_string_array_no_default',
-                value=['alpha', 'beta', 'gamma', 'delta', 'epsilon'],
-            ),
-            Parameter('command_interfaces', value=['position']),
-            Parameter('state_interfaces', value=['position', 'velocity']),
-            Parameter('chainable_command_interfaces', value=['position', 'velocity']),
-            Parameter('kinematics.plugin_name', value='kdl_plugin/KDLKinematics'),
-            Parameter('kinematics.plugin_package', value='kinematics_interface_kdl'),
-            Parameter('kinematics.base', value='base_link'),
-            Parameter('kinematics.tip', value='ee_link'),
-            Parameter('kinematics.group_name', value='manipulator'),
-            Parameter('ft_sensor.name', value='tcp_fts_sensor'),
-            Parameter('ft_sensor.frame.id', value='ee_link'),
-            Parameter('control.frame.id', value='ee_link'),
-            Parameter('fixed_world_frame.frame.id', value='base_link'),
-            Parameter('gravity_compensation.frame.id', value='ee_link'),
-            Parameter('gravity_compensation.CoG.pos', value=[0.1, 0.0, 0.0]),
-            Parameter('admittance.selected_axes', value=[True] * 6),
-            Parameter('admittance.mass', value=[3.0] * 6),
-            Parameter('admittance.damping_ratio', value=[2.828427] * 6),
-            Parameter('admittance.stiffness', value=[50.0, 50.0, 50.0, 1.0, 1.0, 1.0]),
-        ]
         self.node = Node(
-            'test_admittance_controller',
+            'admittance_controller',
             automatically_declare_parameters_from_overrides=True,
-            parameter_overrides=required_params,
         )
-        self.listener = self.ac.ParamListener(self.node)
+        self.listener = admittance_controller.ParamListener(self.node)
         self.params = self.listener.get_params()
 
     def tearDown(self):
@@ -251,7 +227,14 @@ class TestParamsConsistency(unittest.TestCase):
         )
 
     def test_gravity_compensation_cog_force_is_nan(self):
-        self.assertTrue(math.isnan(self.params.gravity_compensation.CoG.force))
+        # the example config file sets CoG.force to 23.0, so update the
+        # parameter to NaN here to check that a NaN value survives the
+        # round-trip through the parameter server
+        self.node.set_parameters(
+            [Parameter('gravity_compensation.CoG.force', value=float('nan'))]
+        )
+        updated_params = self.listener.get_params()
+        self.assertTrue(math.isnan(updated_params.gravity_compensation.CoG.force))
         self.assertTrue(
             math.isnan(self.node.get_parameter('gravity_compensation.CoG.force').value)
         )
@@ -521,6 +504,35 @@ class TestParamsConsistency(unittest.TestCase):
         ros_value = self.node.get_parameter(param_name).value
         self.assertAlmostEqual(lib_value, new_value)
         self.assertAlmostEqual(lib_value, ros_value)
+
+    def test_params_do_not_share_state(self):
+        params1 = self.listener.get_params()
+        params1.pid.rate = 1.0
+        params2 = self.listener.get_params()
+        params2.pid.rate = 2.0
+        self.assertNotEqual(params1.pid.rate, params2.pid.rate)
+        self.node.set_parameters([Parameter('pid.rate', value='3.0')])
+        params2 = self.listener.get_params()
+        self.assertNotEqual(params1.pid.rate, params2.pid.rate)
+
+    def test_maps_do_not_share_state(self):
+        self.node.set_parameters(
+            [
+                Parameter(
+                    'nested_map_struct.A.nested_struct.nested_struct_field',
+                    value='valueA',
+                ),
+                Parameter(
+                    'nested_map_struct.B.nested_struct.nested_struct_field',
+                    value='valueB',
+                ),
+            ]
+        )
+        params = self.listener.get_params()
+        self.assertNotEqual(
+            params.nested_map_struct.get_entry('A').nested_struct.nested_struct_field,
+            params.nested_map_struct.get_entry('B').nested_struct.nested_struct_field,
+        )
 
     def test_update_unrelated_param_does_not_mark_params_as_old(self):
         params_before = self.listener.get_params()

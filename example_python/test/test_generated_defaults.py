@@ -1,4 +1,6 @@
-# Copyright 2026 ros_controls
+#!/usr/bin/env python3
+
+# Copyright 2026 Marq Rasmussen
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -10,7 +12,7 @@
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
 #
-#    * Neither the name of the ros_controls nor the names of its
+#    * Neither the name of the copyright holder nor the names of its
 #      contributors may be used to endorse or promote products derived from
 #      this software without specific prior written permission.
 #
@@ -26,6 +28,20 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Silence deprecation output from tl_expected when this package is consumed
-# transitively through generated ament export dependency CMake files.
-set(tl_expected_DEPRECATED_QUIET TRUE)
+import generate_parameter_module_example
+from generate_parameter_module_example.admittance_parameters import (
+    admittance_controller,
+)
+
+
+def test_generated_module_has_yaml_defaults():
+    params = admittance_controller.Params()
+
+    assert params.interpolation_mode == 'spline'
+    assert params.joints == ['joint1', 'joint2', 'joint3']
+
+
+def test_package_keeps_source_init():
+    assert generate_parameter_module_example.INIT_MARKER == (
+        'generate_parameter_module_example'
+    )
